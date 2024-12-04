@@ -55,9 +55,11 @@ public class HttpUploader extends Uploader
                 + BOUNDARY
                 + EOL
                 + "Content-Disposition: form-data; name=\"" + fileParam + "\";" +
-                "filename=\"" + file.fileName + "\"" + EOL + EOL;
+                "filename=\"" + file.fileName + "\"" + EOL +
+                "Content-Type: " + file.mime + EOL + EOL;
         String multipartFooter = EOL + EOL + HYPHENS + BOUNDARY + HYPHENS + EOL;
 
+        System.out.println("header " + multipartHeader);
         try
         {
             fileSize = file.stream.available();
