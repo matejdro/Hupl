@@ -22,6 +22,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -116,12 +117,17 @@ public class ChooseUploaderActivity extends DrawerActivity
         fileList.clear();
         if (recvIn.getAction().equals(Intent.ACTION_SEND))
         {
-            fileList.add(
-                    new FileUriOrText(
-                        recvIn.getParcelableExtra(Intent.EXTRA_STREAM),
-                        recvIn.getStringExtra(Intent.EXTRA_TEXT)
-                    )
-            );
+            if (recvIn.hasExtra(Intent.EXTRA_STREAM) || recvIn.hasExtra(Intent.EXTRA_TEXT)) {
+                fileList.add(
+                        new FileUriOrText(
+                                recvIn.getParcelableExtra(Intent.EXTRA_STREAM),
+                                recvIn.getStringExtra(Intent.EXTRA_TEXT)
+                        )
+                );
+            }
+            else {
+                Toast.makeText(this, "Got buggy send: " + new ArrayList(recvIn.getExtras().keySet()).toString(), Toast.LENGTH_LONG).show();
+            }
         }
         else if (recvIn.getAction().equals(Intent.ACTION_SEND_MULTIPLE))
         {
