@@ -207,6 +207,10 @@ public class ChooseUploaderActivity extends DrawerActivity
         ArrayList<UploaderEntry> entries = uploaderDB.getAllUploaders();
         if (entries != null)
             upAdapter.addAll(entries);
+
+        if (entries != null && entries.size() == 1 && !fileList.isEmpty()) {
+            startUpload(entries.get(0).name);
+        }
     }
 
     public void newUploaderClick(View v)
@@ -265,26 +269,30 @@ public class ChooseUploaderActivity extends DrawerActivity
         }
         else
         {
-            boolean resize = enableResize.isChecked();
-            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(ChooseUploaderActivity.this);
-            sp.edit().putBoolean("enableResize", resize).apply();
-
-
-            for (FileUriOrText fileUri : fileList)
-            {
-                Intent in = new Intent(this, UploadService.class);
-                in.setAction("eu.imouto.hupl.ACTION_QUEUE_UPLOAD");
-                in.putExtra("uri", fileUri.uri);
-                in.putExtra("text", fileUri.text);
-                in.putExtra("uploader", name);
-                in.putExtra("compress", resize);
-                startService(in);
-            }
-
-            uploaderDB.updateLastUsed(name);
-            fileList.clear();
-            finish();
+            startUpload(name);
         }
+    }
+
+    private void startUpload(String uploader) {
+        boolean resize = enableResize.isChecked();
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(ChooseUploaderActivity.this);
+        sp.edit().putBoolean("enableResize", resize).apply();
+
+
+        for (FileUriOrText fileUri : fileList)
+        {
+            Intent in = new Intent(this, UploadService.class);
+            in.setAction("eu.imouto.hupl.ACTION_QUEUE_UPLOAD");
+            in.putExtra("uri", fileUri.uri);
+            in.putExtra("text", fileUri.text);
+            in.putExtra("uploader", uploader);
+            in.putExtra("compress", resize);
+            startService(in);
+        }
+
+        uploaderDB.updateLastUsed(uploader);
+        fileList.clear();
+        finish();
     }
 
     public void permissionErrorClick(View view)
