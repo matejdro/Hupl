@@ -44,6 +44,8 @@ public class UploadService extends Service implements UploadProgressReceiver
     private boolean dismissOnCancel = true;
     private long lastUpdate = 0;
 
+    private boolean anyErrors = false;
+
     private class QueueEntry
     {
         public String uploader;
@@ -225,6 +227,7 @@ public class UploadService extends Service implements UploadProgressReceiver
     @Override
     public void onUploadFailed(String title, String message)
     {
+        anyErrors = true;
         notification.error(title, message);
         uploading = false;
         stopFG();
@@ -250,7 +253,9 @@ public class UploadService extends Service implements UploadProgressReceiver
     private void stopFG()
     {
         stopForeground(true);
-        notification.newId();
-        notification.show();
+        if (anyErrors) {
+            notification.newId();
+            notification.show();
+        }
     }
 }
