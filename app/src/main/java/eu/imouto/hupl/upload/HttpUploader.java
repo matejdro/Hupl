@@ -152,7 +152,7 @@ public class HttpUploader extends Uploader
             outputStream.close();
 
             status = connection.getResponseCode();
-            if (status != 200)
+            if (status < 200 || status >= 300)
                 throw new UploadException("Server Error", "Received status code HTTP " + status);
 
             //read response body
